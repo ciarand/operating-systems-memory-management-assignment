@@ -9,17 +9,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "process.h"
 
+// global constants
+const int TIME_MAX = 100000;
+
+// function prototypes
 void GetInput(int *mem, int * page);
 int GetNumProcess(const char* fileName);
 void assignProcessList(const char* filePath, PROCESS* processList, int numProc);
+void assignFrameList(FRAME* frameList, int pageSize, int numPage);
 
 int main(int argc, const char * argv[])
 {
     int pageSize = 0;
     int memSize = 0;
-    int pageNum = 0;
+    int numPage = 0;
     int numProcess = 0;
     // absolute path to in1.txt
     char* filePath = "/Users/rabbitofalice/Documents/CSUF/CSUF Summer 2014/CPSC 351/Project_3/in1.txt";
@@ -35,7 +41,12 @@ int main(int argc, const char * argv[])
     assignProcessList(filePath, processlist, numProcess);
     
     // get number of pages
-    pageNum = memSize / pageSize;
+    numPage = memSize / pageSize;
+    
+    // create frames
+    FRAME* framelist = malloc(numPage * sizeof(FRAME));
+    // assign frames 
+    assignFrameList(framelist, pageSize, numPage);
     
     
     return 0;
@@ -150,4 +161,32 @@ void assignProcessList(const char* filePath, PROCESS* processList, int numProc)
     }
     fclose(filePtr);
     return;
+}
+
+// assigns frames to memory and sets assigned to process to false
+void assignFrameList(FRAME* frameList, int pageSize, int numPage)
+{
+    int value = 0;
+    char starting[40];
+    char ending[20];
+    
+    // assigne the frame list to empty set the memory
+    for(int i = 0; i < numPage; i++)
+    {
+        frameList[i].assigned = false;
+        
+        sprintf(starting, "%d", value);
+        strcat(starting, "-");
+        //setting value inclusive starting from zero
+        value += pageSize - 1;
+        
+        sprintf(ending, "%d", value);
+        strcat(starting, ending);
+        strcpy(frameList[i].location, starting);
+        
+        value++;
+        
+        // for testing
+        printf("%s\n", frameList[i].location);
+    }
 }
