@@ -62,7 +62,7 @@ void clearStdin(char* buf) {
     }
 }
 
-int ProcessNumericInputFromUser(const char* output, int (*func)(int)) {
+int processNumericInputFromUser(const char* output, int (*func)(int)) {
     char buf[10];
     int success = 0;
     int res = 0;
@@ -96,10 +96,10 @@ int ProcessNumericInputFromUser(const char* output, int (*func)(int)) {
 // prompts for memory size and page size
 void getInput(int* mem, int* page) {
     while (1) {
-        *mem = ProcessNumericInputFromUser(
+        *mem = processNumericInputFromUser(
             "Memory size", multipleOfOneHundred);
 
-        *page = ProcessNumericInputFromUser(
+        *page = processNumericInputFromUser(
             "Page size (1: 100, 2: 200, 3: 400)", isOneTwoOrThree);
 
         switch (*page) {
