@@ -17,27 +17,21 @@ const int TIME_MAX = 100000;
 
 // function prototypes
 void GetInput(int *mem, int * page);
-int GetNumProcess(const char* fileName);
-void assignProcessList(const char* filePath, PROCESS* processList, int numProc);
+int GetNumProcess(FILE* filePtr);
+void assignProcessList(const char* filePath);
 void assignFrameList(FRAME* frameList, int pageSize, int numPage);
 
 int main() {
     int pageSize = 0;
     int memSize = 0;
     int numPage = 0;
-    int numProcess = 0;
 
     char* filePath = "./in1.txt";
 
     GetInput(&memSize, &pageSize);
 
-    numProcess = GetNumProcess(filePath);
-
-    // allocate space for process array
-    PROCESS* processlist = malloc(numProcess * sizeof(PROCESS));
-
     //assign values to processes from file
-    assignProcessList(filePath, processlist, numProcess);
+    assignProcessList(filePath);
 
     // get number of pages
     numPage = memSize / pageSize;
@@ -50,89 +44,136 @@ int main() {
     return 0;
 }
 
-// prompts for memory size and page size
-void GetInput(int* mem, int* page) {
-    bool getCorrectData = true;
+int multipleOfOneHundred(int t) {
+    return (t % 100) == 0 ? 1 : 0;
+}
 
-    while (getCorrectData) {
-        printf("Memory size: ");
-        scanf("%d", mem);
-        while (*page < 1 || *page > 3) {
-            printf("Page size (1: 100, 2: 200, 3: 400): ");
-            scanf("%d", page);
-            if (*page < 1 || *page > 3) {
-                printf("Invalid entry!\n");
-            }
+int isOneTwoOrThree(int t) {
+    return (t >= 1 && t <= 3) ? 1 : 0;
+}
+
+void clearStdin(char* buf) {
+    if (buf[strlen(buf) - 1] != '\n') {
+        int ch;
+        while (((ch = getchar()) != '\n') && (ch != EOF));
+    }
+}
+
+int ProcessNumericInputFromUser(const char* output, int (*func)(int)) {
+    char buf[10];
+    int success = 0;
+    int res = 0;
+
+    while (!success) {
+        printf("%s: ", output);
+
+        if (fgets(buf, 10, stdin) == NULL) {
+            clearStdin(buf);
+            printf("ERROR: You didn't enter any data!\n");
+
+            continue;
         }
 
-        switch (*page) {
+        if (sscanf(buf, "%d", &res) <= 0) {
+            clearStdin(buf);
+            printf("ERROR: You didn't enter a number!\n");
+
+            continue;
+        }
+
+        if (!(success = (*func)(res))) {
+            clearStdin(buf);
+            printf("ERROR: That number is not a valid choice\n");
+        }
+    }
+
+    return res;
+}
+
+// prompts for memory size and page size
+void GetInput(int* mem, int* pg) {
+    while (1) {
+        *mem = ProcessNumericInputFromUser(
+            "Memory size", multipleOfOneHundred);
+
+        *pg = ProcessNumericInputFromUser(
+            "Page size (1: 100, 2: 200, 3: 400)", isOneTwoOrThree);
+
+        switch (*pg) {
         case 1:
-            *page = 100;
+            *pg = 100;
             break;
         case 2:
-            *page = 200;
+            *pg = 200;
             break;
         case 3:
-            *page = 400;
+            *pg = 400;
             break;
         default:
-            *page = 100;
+            printf("how did you even get here\n");
+            exit(1);
             break;
         }
 
-        if ((*mem) % (*page) == 0) {
-            getCorrectData = false;
-        } else  {
-            printf("Error: Memory Size must be a multiple of the page!\nPlease retry.\n");
+        if ((*mem) % (*pg) == 0) {
+            break;
         }
+
+        printf("ERROR: Memory size must be a multiple of the page!");
+        printf(" %d is not a multiple of %d, please retry.\n", *mem, *pg);
     }
     return;
 }
 
 // get number of processes from file
-int GetNumProcess(const char* fileName) {
-    FILE* filePtr;
+int GetNumProcess(FILE* filePtr) {
     int numProc = 0;
 
-    filePtr = fopen(fileName, "r");
-    if (!filePtr) {
-        printf("ERROR: Failed to open file %s", fileName);
-    } else  {
-        fscanf(filePtr, "%d", &numProc);
-    }
+    fscanf(filePtr, "%d", &numProc);
+
     return numProc;
 }
 
 //stores values processes in process array
-void assignProcessList(const char* filePath, PROCESS* processList, int numProc) {
-    FILE* filePtr;
-    int counter = 0;
+void assignProcessList(const char* filePath) {
     int numSpace;
-    char buf[60];
+    int tmp;
+    int counter = 0;
     int totalSpace = 0;
-    int temp;
-    filePtr = fopen(filePath, "r");
+    FILE* filePtr = fopen(filePath, "r");
+
+    int numProc = GetNumProcess(filePtr);
+    // allocate space for process array
+    PROCESS* procList = malloc(numProc * sizeof(PROCESS));
 
     if (!filePtr) {
         printf("ERROR: Failed to open file %s", filePath);
-    } else  {
+    } else {
         while (!feof(filePtr) && counter < numProc) {
             // clear first line
-            fgets(buf, 60, filePtr);
+            // fgets(buf, 60, filePtr);
 
             // store values for processes
-            fscanf(filePtr, "%d %d %d %d", &(processList[counter].processNum), &(processList[counter].arrivalTime), &(processList[counter].lifeTime), &numSpace);
+            fscanf(filePtr, "%d %d %d %d",
+                   &(procList[counter].processNum),
+                   &(procList[counter].arrivalTime),
+                   &(procList[counter].lifeTime),
+                   &numSpace);
 
             // get total memory requirements for process
             totalSpace = 0;
             for (int i = 0; i < numSpace; i++) {
-                fscanf(filePtr, "%d", &temp);
-                totalSpace += temp;
+                fscanf(filePtr, "%d", &tmp);
+                totalSpace += tmp;
             }
-            processList[counter].memReq = totalSpace;
+            procList[counter].memReq = totalSpace;
 
             // for testing
-            printf("%d %d %d %d\n", (processList[counter].processNum), (processList[counter].arrivalTime), (processList[counter].lifeTime), processList[counter].memReq);
+            printf("%d %d %d %d\n",
+                   (procList[counter].processNum),
+                   (procList[counter].arrivalTime),
+                   (procList[counter].lifeTime),
+                   procList[counter].memReq);
             // increment for next process
             counter++;
         }
