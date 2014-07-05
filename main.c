@@ -55,7 +55,7 @@ int isOneTwoOrThree(int t) {
 void clearStdin(char* buf) {
     if (buf[strlen(buf) - 1] != '\n') {
         int ch;
-        while (((ch = getchar()) != '\n') && (ch != EOF));
+        while (((ch = getchar()) != '\n') && (ch != EOF)) ;
     }
 }
 
