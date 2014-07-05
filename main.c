@@ -94,28 +94,27 @@ int ProcessNumericInputFromUser(const char* output, int (*func)(int)) {
 }
 
 // prompts for memory size and page size
-void getInput(int* mem, int* pg) {
+void getInput(int* mem, int* page) {
     while (1) {
         *mem = ProcessNumericInputFromUser(
             "Memory size", multipleOfOneHundred);
 
-        *pg = ProcessNumericInputFromUser(
+        *page = ProcessNumericInputFromUser(
             "Page size (1: 100, 2: 200, 3: 400)", isOneTwoOrThree);
 
-        switch (*pg) {
-        case 1: *pg = 100; break;
-        case 2: *pg = 200; break;
-        case 3: *pg = 400; break;
+        switch (*page) {
+        case 1: *page = 100; break;
+        case 2: *page = 200; break;
+        case 3: *page = 400; break;
         }
 
-        if ((*mem) % (*pg) == 0) {
+        if ((*mem) % (*page) == 0) {
             break;
         }
 
         printf("ERROR: Memory size must be a multiple of the page!");
-        printf(" %d is not a multiple of %d, please retry.\n", *mem, *pg);
+        printf(" %d is not a multiple of %d, please retry.\n", *mem, *page);
     }
-    return;
 }
 
 // get number of processes from file
