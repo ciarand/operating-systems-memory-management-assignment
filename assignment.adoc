@@ -49,13 +49,13 @@ system (Arrival Time) and its lifetime after it is admitted to the main memory
 (Lifetime in Memory) on the second line, and finally, its memory requirements
 (Address Space). These process specifications will be separated by a single
 blank line. Processes in the file will be listed in arrival order. If two
-processes have the same arrival time, the process listed first in the file
-goes on the input queue first.
+processes have the same arrival time, the process listed first in the file goes
+on the input queue first.
 
 The Address Space line is a sequence of one or more integers separated by
-a single blank. The first integer gives the number of 'pieces' of memory on
-the line. This sequence denotes the total size of the address space of the
-process. You simply sum these integers to get the overall space requirement. 
+a single blank. The first integer gives the number of 'pieces' of memory on the
+line. This sequence denotes the total size of the address space of the process.
+You simply sum these integers to get the overall space requirement.
 
 Note that since the memory is limited, there is no guarantee that a process
 will be admitted to the memory as soon as it arrives; thus it may have to wait
