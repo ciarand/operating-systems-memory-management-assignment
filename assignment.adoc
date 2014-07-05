@@ -18,9 +18,9 @@ Basic functions of the simulator
 --------------------------------
 Input file: `in1.txt`
 
-- Out1 for file in1 using paging with memory size = 2000 and page size = 100
-- Out2 for file in1 using paging with memory size = 2000 and page size = 200
-- Out3 for file in1 using paging with memory size = 2000 and page size = 400
+* Out1 for file in1 using paging with memory size = 2000 and page size = 100
+* Out2 for file in1 using paging with memory size = 2000 and page size = 200
+* Out3 for file in1 using paging with memory size = 2000 and page size = 400
 
 Your simulator will prompt the user for the size of the memory and associated
 parameters information. The Memory Size (an integer) denotes the capacity of
@@ -71,9 +71,9 @@ Your simulator must generate output (to the screen) that explicitly shows the
 trace of important events that modify the memory contents and input queue,
 including:
 
-- Process arrival
-- Process admission to the main memory
-- Process completion
+* Process arrival
+* Process admission to the main memory
+* Process completion
 
 Please make sure to refer to the input file and the corresponding output files
 that illustrate the expected format. When the simulation terminates (when
@@ -98,7 +98,7 @@ on. Even if the current commitments in memory do not allow MM to admit the
 process at position X of Input Queue, MM should try to load other processes at
 positions X + 1,X + 2, …, and in that order.
 
-- Throughout the project, you will assume that the entire address space of
+* Throughout the project, you will assume that the entire address space of
   a process must be brought to the main memory for execution. MM should not
   bring the pages of a process partially: all of its pages must be brought at
   once. Advanced virtual memory techniques, including demand paging and page
@@ -108,19 +108,19 @@ positions X + 1,X + 2, …, and in that order.
   may have to wait in Input Queue until sufficient space is available in
   memory; that is a normal scenario.
 
-- When the MM is allocating a free memory region (hole) to one process/page,
+* When the MM is allocating a free memory region (hole) to one process/page,
   it may have to choose between the lower end and the upper end of the region.
   In this case, always use the lower end.
 
-- The turnaround time for each process will be computed as the difference
+* The turnaround time for each process will be computed as the difference
   between its completion time and its arrival time.
 
-- Since the focus of this project is on memory management, do not be concerned
+* Since the focus of this project is on memory management, do not be concerned
   about the details of CPU scheduling or I/O device management. Just assume
   that the process will be completed after staying in memory for Lifetime in
   Memory time units.
 
-- Feel free to adopt any convenient data structure to represent your memory
+* Feel free to adopt any convenient data structure to represent your memory
   map; explain it in your write-up.
 
 
@@ -147,32 +147,31 @@ Submission guideline
 You have to submit your package on TITANium before 12:55 P.M. on April 30,
 2014 (one copy per person/team).
 
-- This assignment MUST be completed using C or C++ on Linux.
+* This assignment MUST be completed using C or C++ on Linux.
 
-- You may work in groups of 3.
+* You may work in groups of 3.
 
-- Please hand in your source code electronically (do not submit .o or
+* Please hand in your source code electronically (do not submit .o or
   executable code)
 
-- You must make sure that the code compiles and runs correctly.
+* You must make sure that the code compiles and runs correctly.
 
-- Write a README file (text file, do not submit a .doc file) which contains:
+* Write a README file (text file, do not submit a .doc file) which contains:
+** Your Section#, Name and Email Address.
+** The programming language you used (i.e. `C` or `C++`).
+** A write-up explaining the high-level design of your program.
+** How to execute your program.
+** Anything special about your submission that we should take note of.
 
-    - Your Section#, Name and Email Address.
-    - The programming language you used (i.e. `C` or `C++`).
-    - A write-up explaining the high-level design of your program.
-    – How to execute your program.
-    – Anything special about your submission that we should take note of.
-
-- Place all your files under one directory with a unique name (such as
+* Place all your files under one directory with a unique name (such as
   p3-[userid] for assignment 3, e.g. p3-ytian).
 
-- Tar the contents of this directory using the following command.
+* Tar the contents of this directory using the following command.
 
   # E.g. tar -cvf p3-ytian.tar p3-ytian/
   tar cvf [directory name].tar [directory name]
 
-- Use TITANIUM to upload the tared file you created above.
+* Use TITANIUM to upload the tared file you created above.
 
 Do not forget to include any information needed to compile and run your
 program. If we are not able to compile or run your program, it cannot be
