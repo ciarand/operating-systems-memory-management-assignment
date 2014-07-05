@@ -21,13 +21,13 @@ int GetNumProcess(const char* fileName);
 void assignProcessList(const char* filePath, PROCESS* processList, int numProc);
 void assignFrameList(FRAME* frameList, int pageSize, int numPage);
 
-int main(int argc, const char * argv[]) {
+int main() {
     int pageSize = 0;
     int memSize = 0;
     int numPage = 0;
     int numProcess = 0;
-    // absolute path to in1.txt
-    char* filePath = "/Users/rabbitofalice/Documents/CSUF/CSUF Summer 2014/CPSC 351/Project_3/in1.txt";
+
+    char* filePath = "./in1.txt";
 
     GetInput(&memSize, &pageSize);
 
@@ -55,10 +55,10 @@ void GetInput(int* mem, int* page) {
     bool getCorrectData = true;
 
     while (getCorrectData) {
-        printf("Memory Size : ");
+        printf("Memory size: ");
         scanf("%d", mem);
         while (*page < 1 || *page > 3) {
-            printf("Page Size (1: 100, 2: 200, 3: 400) : ");
+            printf("Page size (1: 100, 2: 200, 3: 400): ");
             scanf("%d", page);
             if (*page < 1 || *page > 3) {
                 printf("Invalid entry!\n");
@@ -82,7 +82,7 @@ void GetInput(int* mem, int* page) {
 
         if ((*mem) % (*page) == 0) {
             getCorrectData = false;
-        }else  {
+        } else  {
             printf("Error: Memory Size must be a multiple of the page!\nPlease retry.\n");
         }
     }
@@ -97,7 +97,7 @@ int GetNumProcess(const char* fileName) {
     filePtr = fopen(fileName, "r");
     if (!filePtr) {
         printf("ERROR: Failed to open file %s", fileName);
-    }else  {
+    } else  {
         fscanf(filePtr, "%d", &numProc);
     }
     return numProc;
@@ -115,7 +115,7 @@ void assignProcessList(const char* filePath, PROCESS* processList, int numProc) 
 
     if (!filePtr) {
         printf("ERROR: Failed to open file %s", filePath);
-    }else  {
+    } else  {
         while (!feof(filePtr) && counter < numProc) {
             // clear first line
             fgets(buf, 60, filePtr);
@@ -166,3 +166,4 @@ void assignFrameList(FRAME* frameList, int pageSize, int numPage) {
         printf("%s\n", frameList[i].location);
     }
 }
+
