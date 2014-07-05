@@ -14,12 +14,13 @@ typedef struct {
     int arrivalTime;
     int lifeTime;
     int memReq;
-}PROCESS;
+} PROCESS;
 
 typedef struct {
-    bool assigned; // true if assigned to process, otherwise false
+    // 1 if assigned to process, otherwise 0
+    int assigned;
     char location[40];
     int procAssign;
     int pageNumber;
-}FRAME;
+} FRAME;
 #endif
