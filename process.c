@@ -19,7 +19,8 @@ typedef struct
 
 typedef struct
 {
-    int frameSize;
+    bool assigned; // true if assigned to process, otherwise false
+    char location[40];
     int procAssign;
     int pageNumber;
 }FRAME;
