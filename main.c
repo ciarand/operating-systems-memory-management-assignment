@@ -2,8 +2,11 @@
 //  main.c
 //  Project3
 //
-//  Created by Stratton Aguilar on 7/2/14.
-//  Copyright (c) 2014 Stratton Aguilar. All rights reserved.
+//  Authors:
+//  - Stratton Aguilar
+//  - Ciaran Downey
+//
+//  Some rights reserved. See the included LICENSE file.
 //
 
 #include <stdio.h>
@@ -16,8 +19,8 @@
 const int TIME_MAX = 100000;
 
 // function prototypes
-void GetInput(int *mem, int * page);
-int GetNumProcess(FILE* filePtr);
+void getInput(int *mem, int * page);
+int getNumProcess(FILE* filePtr);
 void assignProcessList(const char* filePath);
 void assignFrameList(FRAME* frameList, int pageSize, int numPage);
 
@@ -28,7 +31,7 @@ int main() {
 
     char* filePath = "./in1.txt";
 
-    GetInput(&memSize, &pageSize);
+    getInput(&memSize, &pageSize);
 
     //assign values to processes from file
     assignProcessList(filePath);
@@ -91,7 +94,7 @@ int ProcessNumericInputFromUser(const char* output, int (*func)(int)) {
 }
 
 // prompts for memory size and page size
-void GetInput(int* mem, int* pg) {
+void getInput(int* mem, int* pg) {
     while (1) {
         *mem = ProcessNumericInputFromUser(
             "Memory size", multipleOfOneHundred);
@@ -100,19 +103,9 @@ void GetInput(int* mem, int* pg) {
             "Page size (1: 100, 2: 200, 3: 400)", isOneTwoOrThree);
 
         switch (*pg) {
-        case 1:
-            *pg = 100;
-            break;
-        case 2:
-            *pg = 200;
-            break;
-        case 3:
-            *pg = 400;
-            break;
-        default:
-            printf("how did you even get here\n");
-            exit(1);
-            break;
+        case 1: *pg = 100; break;
+        case 2: *pg = 200; break;
+        case 3: *pg = 400; break;
         }
 
         if ((*mem) % (*pg) == 0) {
@@ -126,7 +119,7 @@ void GetInput(int* mem, int* pg) {
 }
 
 // get number of processes from file
-int GetNumProcess(FILE* filePtr) {
+int getNumProcess(FILE* filePtr) {
     int numProc = 0;
 
     fscanf(filePtr, "%d", &numProc);
@@ -134,7 +127,7 @@ int GetNumProcess(FILE* filePtr) {
     return numProc;
 }
 
-//stores values processes in process array
+// stores values processes in process array
 void assignProcessList(const char* filePath) {
     int numSpace;
     int tmp;
@@ -142,43 +135,44 @@ void assignProcessList(const char* filePath) {
     int totalSpace = 0;
     FILE* filePtr = fopen(filePath, "r");
 
-    int numProc = GetNumProcess(filePtr);
+    int numProc = getNumProcess(filePtr);
     // allocate space for process array
     PROCESS* procList = malloc(numProc * sizeof(PROCESS));
 
     if (!filePtr) {
         printf("ERROR: Failed to open file %s", filePath);
-    } else {
-        while (!feof(filePtr) && counter < numProc) {
-            // clear first line
-            // fgets(buf, 60, filePtr);
-
-            // store values for processes
-            fscanf(filePtr, "%d %d %d %d",
-                   &(procList[counter].processNum),
-                   &(procList[counter].arrivalTime),
-                   &(procList[counter].lifeTime),
-                   &numSpace);
-
-            // get total memory requirements for process
-            totalSpace = 0;
-            for (int i = 0; i < numSpace; i++) {
-                fscanf(filePtr, "%d", &tmp);
-                totalSpace += tmp;
-            }
-            procList[counter].memReq = totalSpace;
-
-            // for testing
-            printf("%d %d %d %d\n",
-                   (procList[counter].processNum),
-                   (procList[counter].arrivalTime),
-                   (procList[counter].lifeTime),
-                   procList[counter].memReq);
-            // increment for next process
-            counter++;
-        }
+        exit(1);
     }
+
+    while (!feof(filePtr) && counter < numProc) {
+        // store values for processes
+        fscanf(filePtr, "%d %d %d %d",
+               &(procList[counter].processNum),
+               &(procList[counter].arrivalTime),
+               &(procList[counter].lifeTime),
+               &numSpace);
+
+        // get total memory requirements for process
+        totalSpace = 0;
+        for (int i = 0; i < numSpace; i++) {
+            fscanf(filePtr, "%d", &tmp);
+            totalSpace += tmp;
+        }
+        procList[counter].memReq = totalSpace;
+
+        // for testing
+        printf("%d %d %d %d\n",
+               (procList[counter].processNum),
+               (procList[counter].arrivalTime),
+               (procList[counter].lifeTime),
+               procList[counter].memReq);
+
+        // increment for next process
+        counter++;
+    }
+
     fclose(filePtr);
+
     return;
 }
 
@@ -188,7 +182,7 @@ void assignFrameList(FRAME* frameList, int pageSize, int numPage) {
     char starting[40];
     char ending[20];
 
-    // assigne the frame list to empty set the memory
+    // assign the frame list to empty set the memory
     for (int i = 0; i < numPage; i++) {
         frameList[i].assigned = false;
 
