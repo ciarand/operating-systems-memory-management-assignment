@@ -9,21 +9,17 @@
 #ifndef Project3_process_h
 #define Project3_process_h
 
-typedef struct
-{
+typedef struct {
     int processNum;
     int arrivalTime;
     int lifeTime;
     int memReq;
 }PROCESS;
 
-typedef struct
-{
+typedef struct {
     bool assigned; // true if assigned to process, otherwise false
     char location[40];
     int procAssign;
     int pageNumber;
 }FRAME;
-
-
 #endif
