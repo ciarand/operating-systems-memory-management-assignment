@@ -21,7 +21,7 @@ const int TIME_MAX = 100000;
 // function prototypes
 void getInput(int *mem, int * page);
 int getNumProcess(FILE* filePtr);
-void assignProcessList(const char* filePath);
+PROCESS* assignProcessList(const char* filePath);
 void assignFrameList(FRAME* frameList, int pageSize, int numPage);
 
 int main() {
@@ -29,12 +29,14 @@ int main() {
     int memSize = 0;
     int numPage = 0;
 
+    PROCESS* procList;
+
     char* filePath = "./in1.txt";
 
     getInput(&memSize, &pageSize);
 
-    //assign values to processes from file
-    assignProcessList(filePath);
+    // assign values to processes from file
+    procList = assignProcessList(filePath);
 
     // get number of pages
     numPage = memSize / pageSize;
@@ -127,7 +129,7 @@ int getNumProcess(FILE* filePtr) {
 }
 
 // stores values processes in process array
-void assignProcessList(const char* filePath) {
+PROCESS* assignProcessList(const char* filePath) {
     int numSpace;
     int tmp;
     int counter = 0;
@@ -172,7 +174,7 @@ void assignProcessList(const char* filePath) {
 
     fclose(filePtr);
 
-    return;
+    return procList;
 }
 
 // assigns frames to memory and sets assigned to process to false
