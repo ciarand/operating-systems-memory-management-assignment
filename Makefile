@@ -1,6 +1,6 @@
 CFLAGS=-Wall -Wextra -g --std=c99 --pedantic-errors -ggdb -gstrict-dwarf
 CC=gcc
-DEPS=process.h
+DEPS=process.h queue.h
 OBJ=main.o
 
 %.o: %.c $(DEPS)
