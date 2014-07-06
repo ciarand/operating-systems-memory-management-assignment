@@ -121,7 +121,7 @@ positions X + 1,X + 2, …, and in that order.
   Memory time units.
 
 * Feel free to adopt any convenient data structure to represent your memory
-  map; explain it in your write-up.
+  map; *explain it in your write-up.*
 
 
 Operational details
