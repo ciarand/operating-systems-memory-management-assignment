@@ -27,28 +27,59 @@ void assignFrameList(FRAME* frameList, int pageSize, int numPage);
 
 // shared data
 int number_of_procs = 0;
+PROCESS* proc_list;
+proc_queue* queue;
+
+void main_loop() {
+    int i, current_time = 0;
+
+    while (1) {
+        // queue any procs that have arrived
+        for (i = 0; i < number_of_procs; i += 1) {
+            if (proc_list[i].arrivalTime == current_time) {
+                printf("Process %d arrives\n", proc_list[i].processNum);
+
+                enqueue_proc(queue, &proc_list[i]);
+
+                print_proc_queue(queue);
+            }
+        }
+
+        for (i = 0; i < queue->size; i += 1) {
+
+        }
+
+        current_time++;
+
+        if (current_time > TIME_MAX) {
+            printf("max time reached\n");
+            break;
+        }
+    }
+
+    printf("all done\n");
+
+    // get number of pages
+    //numPage = memSize / pageSize;
+    // create frames
+    //FRAME* framelist = malloc(numPage * sizeof(FRAME));
+    // assign frames
+    //assignFrameList(framelist, pageSize, numPage);
+}
 
 int main() {
     int pageSize = 0;
-    int memSize = 0;
-    int numPage = 0;
-
-    PROCESS* procList;
+    int memSize  = 0;
+    //int numPage  = 0;
 
     char* filePath = "./in1.txt";
+    // assign values to processes from file
+    proc_list = assignProcessList(filePath);
+    queue = create_proc_queue(number_of_procs);
 
     getInput(&memSize, &pageSize);
 
-    // assign values to processes from file
-    procList = assignProcessList(filePath);
-
-    // get number of pages
-    numPage = memSize / pageSize;
-
-    // create frames
-    FRAME* framelist = malloc(numPage * sizeof(FRAME));
-    // assign frames
-    assignFrameList(framelist, pageSize, numPage);
+    main_loop();
 
     return 0;
 }
@@ -167,11 +198,13 @@ PROCESS* assignProcessList(const char* filePath) {
         procList[counter].memReq = totalSpace;
 
         // for testing
-        printf("%d %d %d %d\n",
+        /*
+        printf("Num: %d | ATime: %d | LTime: %d | MemR: %d\n",
                (procList[counter].processNum),
                (procList[counter].arrivalTime),
                (procList[counter].lifeTime),
                procList[counter].memReq);
+        */
 
         // increment for next process
         counter++;
@@ -194,7 +227,7 @@ void assignFrameList(FRAME* frameList, int pageSize, int numPage) {
 
         sprintf(starting, "%d", value);
         strcat(starting, "-");
-        //setting value inclusive starting from zero
+        // setting value inclusive starting from zero
         value += pageSize - 1;
 
         sprintf(ending, "%d", value);
