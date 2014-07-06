@@ -50,6 +50,10 @@ PROCESS* peek_queue(proc_queue* q) {
     return &q->elements[q->front];
 }
 
+PROCESS* peek_queue_at_index(proc_queue* q, int index) {
+    return &q->elements[index];
+}
+
 void dequeue_proc(proc_queue* q) {
     if (!queue_has_next(q)) {
         printf("ERROR: queue is empty, can't dequeue anything\n");
@@ -62,4 +66,28 @@ void dequeue_proc(proc_queue* q) {
     if (q->front == q->capacity) {
         q->front = 0;
     }
+}
+
+int iterate_queue_index(proc_queue* q, int counter) {
+    int index = q->front + counter;
+
+    if (index > q->capacity) {
+        index -= q->capacity;
+    }
+
+    return index;
+}
+
+void print_proc_queue(proc_queue* q) {
+    int counter;
+
+    PROCESS* proc;
+
+    printf("Input queue: [ ");
+    for (counter = 0; counter < q->size; counter += 1) {
+        proc = peek_queue_at_index(q, iterate_queue_index(q, counter));
+
+        printf("%d ", (*proc).processNum);
+    }
+    printf("]\n");
 }
