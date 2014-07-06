@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "process.h"
+#include "queue.h"
 
 // global constants
 const int TIME_MAX = 100000;
