@@ -24,6 +24,9 @@ int getNumProcess(FILE* filePtr);
 PROCESS* assignProcessList(const char* filePath);
 void assignFrameList(FRAME* frameList, int pageSize, int numPage);
 
+// shared data
+int number_of_procs = 0;
+
 int main() {
     int pageSize = 0;
     int memSize = 0;
@@ -121,11 +124,11 @@ void getInput(int* mem, int* page) {
 
 // get number of processes from file
 int getNumProcess(FILE* filePtr) {
-    int numProc = 0;
+    int num = 0;
 
-    fscanf(filePtr, "%d", &numProc);
+    fscanf(filePtr, "%d", &num);
 
-    return numProc;
+    return num;
 }
 
 // stores values processes in process array
@@ -136,16 +139,17 @@ PROCESS* assignProcessList(const char* filePath) {
     int totalSpace = 0;
     FILE* filePtr = fopen(filePath, "r");
 
-    int numProc = getNumProcess(filePtr);
+    number_of_procs = getNumProcess(filePtr);
+
     // allocate space for process array
-    PROCESS* procList = malloc(numProc * sizeof(PROCESS));
+    PROCESS* procList = malloc(number_of_procs * sizeof(PROCESS));
 
     if (!filePtr) {
         printf("ERROR: Failed to open file %s", filePath);
         exit(1);
     }
 
-    while (!feof(filePtr) && counter < numProc) {
+    while (!feof(filePtr) && counter < number_of_procs) {
         // store values for processes
         fscanf(filePtr, "%d %d %d %d",
                &(procList[counter].processNum),
