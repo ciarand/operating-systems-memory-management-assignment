@@ -22,7 +22,7 @@
 const int TIME_MAX = 100000;
 
 // function prototypes
-void getInput(int *mem, int * page);
+void get_user_input(int* mem, int* page, char* file_path);
 int getNumProcess(FILE* filePtr);
 PROCESS* assignProcessList(const char* filePath);
 void assignFrameList(frame_list* list, int page_size, int num_frames);
@@ -123,32 +123,30 @@ void main_loop() {
         current_time++;
 
         if (current_time > TIME_MAX) {
-            printf("max time reached\n");
+            printf("DEADLOCK: max time reached\n");
             break;
         }
 
         if (queue->size == 0 && frame_list_is_empty(framelist)) {
-            printf("all jobs finished\n");
             break;
         }
     }
 
     print_turnaround_times();
-
-    printf("all done\n");
 }
 
 int main() {
     int page_size = 0;
     int mem_size = 0;
+
+    char* file_path = malloc(100 * sizeof(char));
+
     int num_frames = 0;
 
-    char* filePath = "./in1.txt";
+    get_user_input(&mem_size, &page_size, file_path);
     // assign values to processes from file
-    proc_list = assignProcessList(filePath);
+    proc_list = assignProcessList(file_path);
     queue = create_proc_queue(number_of_procs);
-
-    getInput(&mem_size, &page_size);
 
     // get number of frames
     num_frames = mem_size / page_size;
@@ -208,8 +206,38 @@ int processNumericInputFromUser(const char* output, int (*func)(int)) {
     return res;
 }
 
+void prompt_for_filename(char* res) {
+    // 100 should be enough, right?
+    char buf[100];
+    FILE* fp;
+
+    while (1) {
+        printf("Input file: ");
+
+        if (fgets(buf, 100, stdin) == NULL) {
+            clearStdin(buf);
+            printf("ERROR: You didn't enter any data!\n");
+
+            continue;
+        }
+
+        if (sscanf(buf, "%s", res) <= 0) {
+            clearStdin(buf);
+            printf("ERROR: You didn't enter a string!\n");
+
+            continue;
+        }
+
+        if (!(fp = fopen(res, "r"))) {
+            perror("ERROR: Could not open file!\n");
+        } else {
+            break;
+        }
+    }
+}
+
 // prompts for memory size and page size
-void getInput(int* mem, int* page) {
+void get_user_input(int* mem, int* page, char* file_path) {
     while (1) {
         *mem = processNumericInputFromUser(
             "Memory size", multipleOfOneHundred);
@@ -230,6 +258,8 @@ void getInput(int* mem, int* page) {
         printf("ERROR: Memory size must be a multiple of the page!");
         printf(" %d is not a multiple of %d, please retry.\n", *mem, *page);
     }
+
+    prompt_for_filename(file_path);
 }
 
 // get number of processes from file
