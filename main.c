@@ -123,11 +123,13 @@ void terminate_completed_procs(int current_time) {
 }
 
 void assign_available_memory_to_waiting_procs(int current_time) {
-    int i, index;
+    int i, index, limit;
     PROCESS* proc;
 
+    limit = queue->size;
+
     // enqueue any procs that can be put into mem
-    for (i = 0; i < queue->size; i += 1) {
+    for (i = 0; i < limit; i += 1) {
         index = iterate_queue_index(queue, i);
         proc = queue->elements[index];
 
