@@ -73,3 +73,35 @@ void fit_proc_into_memory(frame_list* list, PROCESS* proc) {
         }
     }
 }
+
+void print_frame_list(frame_list* list) {
+    int i, in_free_block = 0, start;
+
+    printf("\tMemory map:\n");
+
+    for (i = 0; i < list->number_of_frames; i += 1) {
+        if (!in_free_block && !list->frames[i].assigned) {
+            in_free_block = 1;
+            start = i;
+        } else if (in_free_block && list->frames[i].assigned) {
+            in_free_block = 0;
+            printf("\t\t%d-%d: Free frame(s)\n",
+                    start * list->page_size,
+                    ((i + 1) * list->page_size) -1);
+        }
+
+        if (list->frames[i].assigned) {
+            printf("\t\t%d-%d: Process %d, Page %d\n",
+                    i * list->page_size,
+                    ((i + 1) * list->page_size) - 1,
+                    list->frames[i].procAssign,
+                    list->frames[i].pageNumber);
+        }
+    }
+
+    if (in_free_block) {
+        printf("\t\t%d-%d: Free frame(s)\n",
+                start * list->page_size,
+                ((i) * list->page_size) -1);
+    }
+}
