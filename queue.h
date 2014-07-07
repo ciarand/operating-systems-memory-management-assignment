@@ -96,7 +96,7 @@ void print_proc_queue(proc_queue* q) {
     for (counter = 0; counter < q->size; counter += 1) {
         proc = peek_queue_at_index(q, iterate_queue_index(q, counter));
 
-        printf("%d ", proc->processNum);
+        printf("%d ", proc->pid);
     }
     printf("]\n");
 }

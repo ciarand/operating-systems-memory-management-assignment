@@ -25,101 +25,6 @@ PROCESS* proc_list;
 proc_queue* queue;
 frame_list* framelist;
 
-char* get_announcement_prefix(int current_time) {
-    char* result;
-
-    result = malloc(20 * sizeof(char));
-
-    if (last_announcement == current_time) {
-        sprintf(result, "\t");
-    } else {
-        sprintf(result, "t = %d: ", current_time);
-    }
-
-    last_announcement = current_time;
-
-    return result;
-}
-
-void enqueue_newly_arrived_procs(int current_time) {
-    int i;
-    PROCESS* proc;
-
-    for (i = 0; i < number_of_procs; i += 1) {
-        proc = &proc_list[i];
-
-        if (proc->arrivalTime == current_time) {
-            printf("%sProcess %d arrives\n",
-                    get_announcement_prefix(current_time),
-                    proc->processNum);
-
-            proc->is_active = 1;
-            proc->time_added_to_memory = current_time;
-
-            enqueue_proc(queue, proc);
-
-            print_proc_queue(queue);
-        }
-    }
-}
-
-void dequeue_completed_procs(int current_time) {
-    int i, time_spent_in_memory;
-    PROCESS* proc;
-
-    // dequeue any procs that need it
-    for (i = 0; i < number_of_procs; i += 1) {
-        proc = &proc_list[i];
-        time_spent_in_memory = current_time - proc->time_added_to_memory;
-        if (proc->is_active && (time_spent_in_memory >= proc->lifeTime)) {
-            printf("%sProcess %d completes\n",
-                    get_announcement_prefix(current_time),
-                    proc->processNum);
-
-            proc->is_active = 0;
-            proc->time_finished = current_time;
-
-            free_memory_for_pid(framelist, proc->processNum);
-
-            print_frame_list(framelist);
-        }
-    }
-}
-
-void assign_available_memory_to_waiting_procs(int current_time) {
-    int i, index;
-    PROCESS* proc;
-
-    // enqueue any procs that can be put into mem
-    for (i = 0; i < queue->size; i += 1) {
-        index = iterate_queue_index(queue, i);
-        proc = peek_queue_at_index(queue, index);
-
-        if (proc_can_fit_into_memory(framelist, proc)) {
-            printf("%sMM moves Process %d to memory\n",
-                    get_announcement_prefix(current_time),
-                    proc->processNum);
-
-            fit_proc_into_memory(framelist, proc);
-            dequeue_proc_at_index(queue, i);
-
-            print_proc_queue(queue);
-            print_frame_list(framelist);
-        }
-    }
-}
-
-void print_turnaround_times() {
-    int i;
-    float total = 0;
-
-    for (i = 0; i < number_of_procs; i += 1) {
-        total += proc_list[i].time_finished - proc_list[i].time_added_to_memory;
-    }
-
-    printf("Average Turnaround Time: %2.2f\n", total / number_of_procs);
-}
-
 void main_loop() {
     long current_time = 0;
 
@@ -156,7 +61,7 @@ int main() {
 
     get_user_input(&mem_size, &page_size, file_path);
     // assign values to processes from file
-    proc_list = assignProcessList(file_path);
+    proc_list = assign_process_list(file_path);
     queue = create_proc_queue(number_of_procs);
 
     // get number of frames
@@ -164,29 +69,124 @@ int main() {
     // create framelist
     framelist = create_frame_list(num_frames, page_size);
     // assign frames
-    // assignFrameList(framelist, page_size, num_frames);
+    // assign_frame_list(framelist, page_size, num_frames);
 
     main_loop();
 
     return 0;
 }
 
-int multipleOfOneHundred(int t) {
+void enqueue_newly_arrived_procs(int current_time) {
+    int i;
+    PROCESS* proc;
+
+    for (i = 0; i < number_of_procs; i += 1) {
+        proc = &proc_list[i];
+
+        if (proc->arrival_time == current_time) {
+            printf("%sProcess %d arrives\n",
+                   get_announcement_prefix(current_time),
+                   proc->pid);
+
+            proc->is_active = 1;
+            proc->time_added_to_memory = current_time;
+
+            enqueue_proc(queue, proc);
+
+            print_proc_queue(queue);
+        }
+    }
+}
+
+void dequeue_completed_procs(int current_time) {
+    int i, time_spent_in_memory;
+    PROCESS* proc;
+
+    // dequeue any procs that need it
+    for (i = 0; i < number_of_procs; i += 1) {
+        proc = &proc_list[i];
+        time_spent_in_memory = current_time - proc->time_added_to_memory;
+        if (proc->is_active && (time_spent_in_memory >= proc->life_time)) {
+            printf("%sProcess %d completes\n",
+                   get_announcement_prefix(current_time),
+                   proc->pid);
+
+            proc->is_active = 0;
+            proc->time_finished = current_time;
+
+            free_memory_for_pid(framelist, proc->pid);
+
+            print_frame_list(framelist);
+        }
+    }
+}
+
+void assign_available_memory_to_waiting_procs(int current_time) {
+    int i, index;
+    PROCESS* proc;
+
+    // enqueue any procs that can be put into mem
+    for (i = 0; i < queue->size; i += 1) {
+        index = iterate_queue_index(queue, i);
+        proc = peek_queue_at_index(queue, index);
+
+        if (proc_can_fit_into_memory(framelist, proc)) {
+            printf("%sMM moves Process %d to memory\n",
+                   get_announcement_prefix(current_time),
+                   proc->pid);
+
+            fit_proc_into_memory(framelist, proc);
+            dequeue_proc_at_index(queue, i);
+
+            print_proc_queue(queue);
+            print_frame_list(framelist);
+        }
+    }
+}
+
+char* get_announcement_prefix(int current_time) {
+    char* result;
+
+    result = malloc(20 * sizeof(char));
+
+    if (last_announcement == current_time) {
+        sprintf(result, "\t");
+    } else {
+        sprintf(result, "t = %d: ", current_time);
+    }
+
+    last_announcement = current_time;
+
+    return result;
+}
+
+void print_turnaround_times() {
+    int i;
+    float total = 0;
+
+    for (i = 0; i < number_of_procs; i += 1) {
+        total += proc_list[i].time_finished - proc_list[i].time_added_to_memory;
+    }
+
+    printf("Average Turnaround Time: %2.2f\n", total / number_of_procs);
+}
+
+int multiple_of_one_hundred(int t) {
     return (t % 100) == 0 ? 1 : 0;
 }
 
-int isOneTwoOrThree(int t) {
+int is_one_two_or_three(int t) {
     return (t >= 1 && t <= 3) ? 1 : 0;
 }
 
-void clearStdin(char* buf) {
+void clear_stdin(char* buf) {
     if (buf[strlen(buf) - 1] != '\n') {
         int ch;
         while (((ch = getchar()) != '\n') && (ch != EOF)) ;
     }
 }
 
-int processNumericInputFromUser(const char* output, int (*func)(int)) {
+int process_numeric_input_from_user(const char* output, int (*func)(int)) {
     char buf[10];
     int success = 0;
     int res = 0;
@@ -195,21 +195,21 @@ int processNumericInputFromUser(const char* output, int (*func)(int)) {
         printf("%s: ", output);
 
         if (fgets(buf, 10, stdin) == NULL) {
-            clearStdin(buf);
+            clear_stdin(buf);
             printf("ERROR: You didn't enter any data!\n");
 
             continue;
         }
 
         if (sscanf(buf, "%d", &res) <= 0) {
-            clearStdin(buf);
+            clear_stdin(buf);
             printf("ERROR: You didn't enter a number!\n");
 
             continue;
         }
 
         if (!(success = (*func)(res))) {
-            clearStdin(buf);
+            clear_stdin(buf);
             printf("ERROR: That number is not a valid choice\n");
         }
     }
@@ -225,14 +225,14 @@ void prompt_for_filename(char* res) {
         printf("Input file: ");
 
         if (fgets(buf, 100, stdin) == NULL) {
-            clearStdin(buf);
+            clear_stdin(buf);
             printf("ERROR: You didn't enter any data!\n");
 
             continue;
         }
 
         if (sscanf(buf, "%s", res) <= 0) {
-            clearStdin(buf);
+            clear_stdin(buf);
             printf("ERROR: You didn't enter a string!\n");
 
             continue;
@@ -249,11 +249,11 @@ void prompt_for_filename(char* res) {
 // prompts for memory size and page size
 void get_user_input(int* mem, int* page, char* file_path) {
     while (1) {
-        *mem = processNumericInputFromUser(
-            "Memory size", multipleOfOneHundred);
+        *mem = process_numeric_input_from_user(
+            "Memory size", multiple_of_one_hundred);
 
-        *page = processNumericInputFromUser(
-            "Page size (1: 100, 2: 200, 3: 400)", isOneTwoOrThree);
+        *page = process_numeric_input_from_user(
+            "Page size (1: 100, 2: 200, 3: 400)", is_one_two_or_three);
 
         switch (*page) {
         case 1: *page = 100; break;
@@ -273,7 +273,7 @@ void get_user_input(int* mem, int* page, char* file_path) {
 }
 
 // get number of processes from file
-int getNumProcess(FILE* filePtr) {
+int get_number_of_processes_from_file(FILE* filePtr) {
     int num = 0;
 
     fscanf(filePtr, "%d", &num);
@@ -282,14 +282,14 @@ int getNumProcess(FILE* filePtr) {
 }
 
 // stores values processes in process array
-PROCESS* assignProcessList(const char* file_path) {
+PROCESS* assign_process_list(const char* file_path) {
     int numSpace;
     int tmp;
     int counter = 0;
     int totalSpace = 0;
     FILE* filePtr = fopen(file_path, "r");
 
-    number_of_procs = getNumProcess(filePtr);
+    number_of_procs = get_number_of_processes_from_file(filePtr);
 
     // allocate space for process array
     PROCESS* procList = malloc(number_of_procs * sizeof(PROCESS));
@@ -302,9 +302,9 @@ PROCESS* assignProcessList(const char* file_path) {
     while (!feof(filePtr) && counter < number_of_procs) {
         // store values for processes
         fscanf(filePtr, "%d %d %d %d",
-               &(procList[counter].processNum),
-               &(procList[counter].arrivalTime),
-               &(procList[counter].lifeTime),
+               &(procList[counter].pid),
+               &(procList[counter].arrival_time),
+               &(procList[counter].life_time),
                &numSpace);
 
         // get total memory requirements for process
@@ -313,7 +313,7 @@ PROCESS* assignProcessList(const char* file_path) {
             fscanf(filePtr, "%d", &tmp);
             totalSpace += tmp;
         }
-        procList[counter].memReq = totalSpace;
+        procList[counter].mem_reqs = totalSpace;
 
         procList[counter].is_active = 0;
         procList[counter].time_added_to_memory = -1;
@@ -328,7 +328,7 @@ PROCESS* assignProcessList(const char* file_path) {
 }
 
 // assigns frames to memory and sets assigned to process to false
-void assignFrameList(frame_list* list, int page_size, int num_frames) {
+void assign_frame_list(frame_list* list, int page_size, int num_frames) {
     int value = 0;
     char starting[40];
     char ending[20];
