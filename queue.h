@@ -28,7 +28,7 @@ void enqueue_proc(proc_queue* q, PROCESS* proc) {
     }
 
     q->size++;
-    q->rear += 1;
+    q->rear = q->rear + 1;
 
     if (q->rear == q->capacity) {
         q->rear = 0;
@@ -68,14 +68,8 @@ void dequeue_proc(proc_queue* q) {
     }
 }
 
-int iterate_queue_index(proc_queue* q, int counter) {
-    int index = q->front + counter;
-
-    if (index > q->capacity) {
-        index -= q->capacity;
-    }
-
-    return index;
+int iterate_queue_index(proc_queue* q, int index) {
+    return q->front + index;
 }
 
 void dequeue_proc_at_index(proc_queue* q, int index) {
@@ -102,7 +96,7 @@ void print_proc_queue(proc_queue* q) {
     for (counter = 0; counter < q->size; counter += 1) {
         proc = peek_queue_at_index(q, iterate_queue_index(q, counter));
 
-        printf("%d ", (*proc).processNum);
+        printf("%d ", proc->processNum);
     }
     printf("]\n");
 }
