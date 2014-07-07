@@ -50,7 +50,7 @@ char* get_announcement_prefix(int current_time) {
 }
 
 void main_loop() {
-    int i, index;
+    int i, index, time_spent_in_memory;
     long current_time = 0;
     PROCESS* proc;
 
@@ -65,7 +65,7 @@ void main_loop() {
                         proc->processNum);
 
                 proc->is_active = 1;
-                proc->time_left = proc->lifeTime;
+                proc->time_added_to_memory = current_time;
 
                 enqueue_proc(queue, proc);
 
@@ -73,23 +73,20 @@ void main_loop() {
             }
         }
 
-        // decrement all currently active procs (and dequeue them if we can)
+        // dequeue any procs that need it
         for (i = 0; i < number_of_procs; i += 1) {
             proc = &proc_list[i];
-            if (proc->is_active) {
-                proc->time_left--;
+            time_spent_in_memory = current_time - proc->time_added_to_memory;
+            if (proc->is_active && (time_spent_in_memory >= proc->lifeTime)) {
+                printf("%sProcess %d completes\n",
+                        get_announcement_prefix(current_time),
+                        proc->processNum);
 
-                if (proc->time_left <= 0) {
-                    printf("%sProcess %d completes\n",
-                            get_announcement_prefix(current_time),
-                            proc->processNum);
+                proc->is_active = 0;
 
-                    proc->is_active = 0;
+                free_memory_for_pid(framelist, proc->processNum);
 
-                    free_memory_for_pid(framelist, proc->processNum);
-
-                    print_frame_list(framelist);
-                }
+                print_frame_list(framelist);
             }
         }
 
@@ -265,7 +262,7 @@ PROCESS* assignProcessList(const char* filePath) {
         procList[counter].memReq = totalSpace;
 
         procList[counter].is_active = 0;
-        procList[counter].time_left = 0;
+        procList[counter].time_added_to_memory = -1;
 
         counter++;
     }

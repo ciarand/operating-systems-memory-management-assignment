@@ -15,7 +15,7 @@ typedef struct {
     int lifeTime;
     int memReq;
 
-    int time_left;
+    int time_added_to_memory;
     int is_active;
 } PROCESS;
 #endif
