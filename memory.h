@@ -114,7 +114,6 @@ int frame_list_is_empty(frame_list* list) {
     return 1;
 }
 
-
 void free_memory_for_pid(frame_list* list, int pid) {
     int i;
 
@@ -129,5 +128,5 @@ void free_memory_for_pid(frame_list* list, int pid) {
             (*frame).assigned = 0;
         }
     }
-
 }
+

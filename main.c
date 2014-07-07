@@ -49,9 +49,7 @@ char* get_announcement_prefix(int current_time) {
     return result;
 }
 
-
-void print_turnaround_times()
-{
+void print_turnaround_times() {
     int i;
     float total = 0;
 
@@ -74,8 +72,8 @@ void main_loop() {
 
             if (proc->arrivalTime == current_time) {
                 printf("%sProcess %d arrives\n",
-                        get_announcement_prefix(current_time),
-                        proc->processNum);
+                       get_announcement_prefix(current_time),
+                       proc->processNum);
 
                 proc->is_active = 1;
                 proc->time_added_to_memory = current_time;
@@ -92,8 +90,8 @@ void main_loop() {
             time_spent_in_memory = current_time - proc->time_added_to_memory;
             if (proc->is_active && (time_spent_in_memory >= proc->lifeTime)) {
                 printf("%sProcess %d completes\n",
-                        get_announcement_prefix(current_time),
-                        proc->processNum);
+                       get_announcement_prefix(current_time),
+                       proc->processNum);
 
                 proc->is_active = 0;
                 proc->time_finished = current_time;
@@ -111,8 +109,8 @@ void main_loop() {
 
             if (proc_can_fit_into_memory(framelist, proc)) {
                 printf("%sMM moves Process %d to memory\n",
-                        get_announcement_prefix(current_time),
-                        proc->processNum);
+                       get_announcement_prefix(current_time),
+                       proc->processNum);
 
                 fit_proc_into_memory(framelist, proc);
                 dequeue_proc_at_index(queue, i);
