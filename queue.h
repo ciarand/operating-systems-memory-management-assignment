@@ -11,11 +11,11 @@ proc_queue* create_proc_queue(int length) {
 
     q = malloc(sizeof(proc_queue));
 
-    q->elements = (PROCESS *) malloc(sizeof(PROCESS) * length);
-    q->size     = 0;
+    q->elements = (PROCESS*)malloc(sizeof(PROCESS) * length);
+    q->size = 0;
     q->capacity = length;
-    q->front    = 0;
-    q->rear     = -1;
+    q->front = 0;
+    q->rear = -1;
 
     return q;
 }
@@ -106,3 +106,4 @@ void print_proc_queue(proc_queue* q) {
     }
     printf("]\n");
 }
+

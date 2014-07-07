@@ -15,5 +15,4 @@ typedef struct {
     int lifeTime;
     int memReq;
 } PROCESS;
-
 #endif

@@ -84,8 +84,8 @@ void main_loop() {
 
 int main() {
     int page_size = 0;
-    int mem_size  = 0;
-    int num_frames  = 0;
+    int mem_size = 0;
+    int num_frames = 0;
 
     char* filePath = "./in1.txt";
     // assign values to processes from file
@@ -221,12 +221,12 @@ PROCESS* assignProcessList(const char* filePath) {
 
         // for testing
         /*
-        printf("Num: %d | ATime: %d | LTime: %d | MemR: %d\n",
+           printf("Num: %d | ATime: %d | LTime: %d | MemR: %d\n",
                (procList[counter].processNum),
                (procList[counter].arrivalTime),
                (procList[counter].lifeTime),
                procList[counter].memReq);
-        */
+         */
 
         // increment for next process
         counter++;
