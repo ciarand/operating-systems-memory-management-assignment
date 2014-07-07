@@ -41,17 +41,14 @@ int proc_can_fit_into_memory(frame_list* list, PROCESS* proc) {
 
     // if the number of free frames * the page size is greater than the mem req
     // for the process in question we can fit it in.
-    //printf("num_free_frames = %d, page_size = %d, memReq = %d\n",
-    //num_free_frames, list->page_size, (*proc).memReq);
-
-    return (num_free_frames * list->page_size) >= (*proc).memReq;
+    return (num_free_frames * list->page_size) >= proc->memReq;
 }
 
 void fit_proc_into_memory(frame_list* list, PROCESS* proc) {
     // this assumes you've already checked that you *can* fit the proc into mem
     int i, remaining_mem, current_page = 1;
 
-    remaining_mem = (*proc).memReq;
+    remaining_mem = proc->memReq;
 
     for (i = 0; i < list->number_of_frames; i += 1) {
         // if this frame is not assigned
@@ -61,7 +58,7 @@ void fit_proc_into_memory(frame_list* list, PROCESS* proc) {
             // set the page number
             list->frames[i].pageNumber = current_page;
             // set the proc num
-            list->frames[i].procAssign = (*proc).processNum;
+            list->frames[i].procAssign = proc->processNum;
 
             current_page++;
             remaining_mem -= list->page_size;
@@ -117,3 +114,20 @@ int frame_list_is_empty(frame_list* list) {
     return 1;
 }
 
+
+void free_memory_for_pid(frame_list* list, int pid) {
+    int i;
+
+    FRAME* frame;
+
+    for (i = 0; i < list->number_of_frames; i += 1) {
+        frame = &list->frames[i];
+
+        if ((*frame).procAssign == pid) {
+            (*frame).procAssign = 0;
+            (*frame).pageNumber = 0;
+            (*frame).assigned = 0;
+        }
+    }
+
+}
