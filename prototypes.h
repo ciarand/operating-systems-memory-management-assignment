@@ -29,7 +29,7 @@ void assign_available_memory_to_waiting_procs(int current_time);
 void clear_stdin(char* buf);
 
 // removes any completed procs from memory
-void dequeue_completed_procs(int current_time);
+void terminate_completed_procs(int current_time);
 
 // adds any newly arrived procs to the input queue
 void enqueue_newly_arrived_procs(int current_time);

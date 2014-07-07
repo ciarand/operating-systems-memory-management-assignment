@@ -83,7 +83,7 @@ void print_frame_list(frame_list* list) {
             in_free_block = 0;
             printf("\t\t%d-%d: Free frame(s)\n",
                    start * list->page_size,
-                   ((i + 1) * list->page_size) - 1);
+                   (i * list->page_size) - 1);
         }
 
         if (list->frames[i].assigned) {
@@ -116,16 +116,15 @@ int frame_list_is_empty(frame_list* list) {
 
 void free_memory_for_pid(frame_list* list, int pid) {
     int i;
-
     FRAME* frame;
 
     for (i = 0; i < list->number_of_frames; i += 1) {
         frame = &list->frames[i];
 
-        if ((*frame).proc_assign == pid) {
-            (*frame).proc_assign = 0;
-            (*frame).page_num = 0;
-            (*frame).assigned = 0;
+        if (frame->proc_assign == pid) {
+            frame->proc_assign = 0;
+            frame->page_num = 0;
+            frame->assigned = 0;
         }
     }
 }

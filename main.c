@@ -32,8 +32,10 @@ void main_loop() {
         // queue any procs that have arrived
         enqueue_newly_arrived_procs(current_time);
 
-        dequeue_completed_procs(current_time);
+        // remove any completed procs
+        terminate_completed_procs(current_time);
 
+        // assign available memory to procs that need it
         assign_available_memory_to_waiting_procs(current_time);
 
         current_time++;
@@ -88,17 +90,15 @@ void enqueue_newly_arrived_procs(int current_time) {
                    get_announcement_prefix(current_time),
                    proc->pid);
 
-            proc->is_active = 1;
-            proc->time_added_to_memory = current_time;
-
             enqueue_proc(queue, proc);
 
             print_proc_queue(queue);
+            print_frame_list(framelist);
         }
     }
 }
 
-void dequeue_completed_procs(int current_time) {
+void terminate_completed_procs(int current_time) {
     int i, time_spent_in_memory;
     PROCESS* proc;
 
@@ -106,6 +106,7 @@ void dequeue_completed_procs(int current_time) {
     for (i = 0; i < number_of_procs; i += 1) {
         proc = &proc_list[i];
         time_spent_in_memory = current_time - proc->time_added_to_memory;
+
         if (proc->is_active && (time_spent_in_memory >= proc->life_time)) {
             printf("%sProcess %d completes\n",
                    get_announcement_prefix(current_time),
@@ -128,7 +129,7 @@ void assign_available_memory_to_waiting_procs(int current_time) {
     // enqueue any procs that can be put into mem
     for (i = 0; i < queue->size; i += 1) {
         index = iterate_queue_index(queue, i);
-        proc = peek_queue_at_index(queue, index);
+        proc = queue->elements[index];
 
         if (proc_can_fit_into_memory(framelist, proc)) {
             printf("%sMM moves Process %d to memory\n",
@@ -136,8 +137,11 @@ void assign_available_memory_to_waiting_procs(int current_time) {
                    proc->pid);
 
             fit_proc_into_memory(framelist, proc);
-            dequeue_proc_at_index(queue, i);
 
+            proc->is_active = 1;
+            proc->time_added_to_memory = current_time;
+
+            dequeue_proc_at_index(queue, i);
             print_proc_queue(queue);
             print_frame_list(framelist);
         }

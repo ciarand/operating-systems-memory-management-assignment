@@ -3,7 +3,7 @@ typedef struct proc_queue {
     int size;
     int front;
     int rear;
-    PROCESS *elements;
+    PROCESS **elements;
 } proc_queue;
 
 proc_queue* create_proc_queue(int length) {
@@ -11,7 +11,7 @@ proc_queue* create_proc_queue(int length) {
 
     q = malloc(sizeof(proc_queue));
 
-    q->elements = (PROCESS*)malloc(sizeof(PROCESS) * length);
+    q->elements = malloc(sizeof(PROCESS) * length);
     q->size = 0;
     q->capacity = length;
     q->front = 0;
@@ -34,7 +34,7 @@ void enqueue_proc(proc_queue* q, PROCESS* proc) {
         q->rear = 0;
     }
 
-    q->elements[q->rear] = *proc;
+    q->elements[q->rear] = proc;
 }
 
 int queue_has_next(proc_queue* q) {
@@ -47,11 +47,11 @@ PROCESS* peek_queue(proc_queue* q) {
         exit(2);
     }
 
-    return &q->elements[q->front];
+    return q->elements[q->front];
 }
 
 PROCESS* peek_queue_at_index(proc_queue* q, int index) {
-    return &q->elements[index];
+    return q->elements[index];
 }
 
 void dequeue_proc(proc_queue* q) {
