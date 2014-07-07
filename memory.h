@@ -2,8 +2,8 @@ typedef struct FRAME {
     // 1 if assigned to process, otherwise 0
     int assigned;
     char location[40];
-    int procAssign;
-    int pageNumber;
+    int proc_assign;
+    int page_num;
 } FRAME;
 
 typedef struct frame_list {
@@ -56,9 +56,9 @@ void fit_proc_into_memory(frame_list* list, PROCESS* proc) {
             // assign it
             list->frames[i].assigned = 1;
             // set the page number
-            list->frames[i].pageNumber = current_page;
+            list->frames[i].page_num = current_page;
             // set the proc num
-            list->frames[i].procAssign = proc->pid;
+            list->frames[i].proc_assign = proc->pid;
 
             current_page++;
             remaining_mem -= list->page_size;
@@ -90,8 +90,8 @@ void print_frame_list(frame_list* list) {
             printf("\t\t%d-%d: Process %d, Page %d\n",
                    i * list->page_size,
                    ((i + 1) * list->page_size) - 1,
-                   list->frames[i].procAssign,
-                   list->frames[i].pageNumber);
+                   list->frames[i].proc_assign,
+                   list->frames[i].page_num);
         }
     }
 
@@ -122,9 +122,9 @@ void free_memory_for_pid(frame_list* list, int pid) {
     for (i = 0; i < list->number_of_frames; i += 1) {
         frame = &list->frames[i];
 
-        if ((*frame).procAssign == pid) {
-            (*frame).procAssign = 0;
-            (*frame).pageNumber = 0;
+        if ((*frame).proc_assign == pid) {
+            (*frame).proc_assign = 0;
+            (*frame).page_num = 0;
             (*frame).assigned = 0;
         }
     }
