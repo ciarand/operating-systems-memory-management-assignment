@@ -42,7 +42,7 @@ void main_loop() {
         // queue any procs that have arrived
         for (i = 0; i < number_of_procs; i += 1) {
             if (proc_list[i].arrivalTime == current_time) {
-                printf("Process %d arrives\n", proc_list[i].processNum);
+                printf("\tProcess %d arrives\n", proc_list[i].processNum);
 
                 enqueue_proc(queue, &proc_list[i]);
 
@@ -56,12 +56,13 @@ void main_loop() {
             proc = peek_queue_at_index(queue, index);
 
             if (proc_can_fit_into_memory(framelist, proc)) {
-                printf("MM moves Process %d to memory\n", (*proc).processNum);
+                printf("\tMM moves Process %d to memory\n", (*proc).processNum);
 
                 fit_proc_into_memory(framelist, proc);
                 dequeue_proc_at_index(queue, i);
 
                 print_proc_queue(queue);
+                print_frame_list(framelist);
             }
         }
 
