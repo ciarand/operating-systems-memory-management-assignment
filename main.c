@@ -14,18 +14,10 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "process.h"
-#include "queue.h"
-#include "memory.h"
+#include "prototypes.h"
 
 // global constants
 const int TIME_MAX = 100000;
-
-// function prototypes
-void get_user_input(int* mem, int* page, char* file_path);
-int getNumProcess(FILE* filePtr);
-PROCESS* assignProcessList(const char* filePath);
-void assignFrameList(frame_list* list, int page_size, int num_frames);
 
 // shared data
 int number_of_procs = 0, last_announcement = -1;
@@ -49,6 +41,74 @@ char* get_announcement_prefix(int current_time) {
     return result;
 }
 
+void enqueue_newly_arrived_procs(int current_time) {
+    int i;
+    PROCESS* proc;
+
+    for (i = 0; i < number_of_procs; i += 1) {
+        proc = &proc_list[i];
+
+        if (proc->arrivalTime == current_time) {
+            printf("%sProcess %d arrives\n",
+                    get_announcement_prefix(current_time),
+                    proc->processNum);
+
+            proc->is_active = 1;
+            proc->time_added_to_memory = current_time;
+
+            enqueue_proc(queue, proc);
+
+            print_proc_queue(queue);
+        }
+    }
+}
+
+void dequeue_completed_procs(int current_time) {
+    int i, time_spent_in_memory;
+    PROCESS* proc;
+
+    // dequeue any procs that need it
+    for (i = 0; i < number_of_procs; i += 1) {
+        proc = &proc_list[i];
+        time_spent_in_memory = current_time - proc->time_added_to_memory;
+        if (proc->is_active && (time_spent_in_memory >= proc->lifeTime)) {
+            printf("%sProcess %d completes\n",
+                    get_announcement_prefix(current_time),
+                    proc->processNum);
+
+            proc->is_active = 0;
+            proc->time_finished = current_time;
+
+            free_memory_for_pid(framelist, proc->processNum);
+
+            print_frame_list(framelist);
+        }
+    }
+}
+
+void assign_available_memory_to_waiting_procs(int current_time) {
+    int i, index;
+    PROCESS* proc;
+
+    // enqueue any procs that can be put into mem
+    for (i = 0; i < queue->size; i += 1) {
+        index = iterate_queue_index(queue, i);
+        proc = peek_queue_at_index(queue, index);
+
+        if (proc_can_fit_into_memory(framelist, proc)) {
+            printf("%sMM moves Process %d to memory\n",
+                    get_announcement_prefix(current_time),
+                    proc->processNum);
+
+            fit_proc_into_memory(framelist, proc);
+            dequeue_proc_at_index(queue, i);
+
+            print_proc_queue(queue);
+            print_frame_list(framelist);
+        }
+    }
+}
+
 void print_turnaround_times() {
     int i;
     float total = 0;
@@ -61,64 +121,15 @@ void print_turnaround_times() {
 }
 
 void main_loop() {
-    int i, index, time_spent_in_memory;
     long current_time = 0;
-    PROCESS* proc;
 
     while (1) {
         // queue any procs that have arrived
-        for (i = 0; i < number_of_procs; i += 1) {
-            proc = &proc_list[i];
+        enqueue_newly_arrived_procs(current_time);
 
-            if (proc->arrivalTime == current_time) {
-                printf("%sProcess %d arrives\n",
-                       get_announcement_prefix(current_time),
-                       proc->processNum);
+        dequeue_completed_procs(current_time);
 
-                proc->is_active = 1;
-                proc->time_added_to_memory = current_time;
-
-                enqueue_proc(queue, proc);
-
-                print_proc_queue(queue);
-            }
-        }
-
-        // dequeue any procs that need it
-        for (i = 0; i < number_of_procs; i += 1) {
-            proc = &proc_list[i];
-            time_spent_in_memory = current_time - proc->time_added_to_memory;
-            if (proc->is_active && (time_spent_in_memory >= proc->lifeTime)) {
-                printf("%sProcess %d completes\n",
-                       get_announcement_prefix(current_time),
-                       proc->processNum);
-
-                proc->is_active = 0;
-                proc->time_finished = current_time;
-
-                free_memory_for_pid(framelist, proc->processNum);
-
-                print_frame_list(framelist);
-            }
-        }
-
-        // enqueue any procs that can be put into mem
-        for (i = 0; i < queue->size; i += 1) {
-            index = iterate_queue_index(queue, i);
-            proc = peek_queue_at_index(queue, index);
-
-            if (proc_can_fit_into_memory(framelist, proc)) {
-                printf("%sMM moves Process %d to memory\n",
-                       get_announcement_prefix(current_time),
-                       proc->processNum);
-
-                fit_proc_into_memory(framelist, proc);
-                dequeue_proc_at_index(queue, i);
-
-                print_proc_queue(queue);
-                print_frame_list(framelist);
-            }
-        }
+        assign_available_memory_to_waiting_procs(current_time);
 
         current_time++;
 
@@ -207,7 +218,6 @@ int processNumericInputFromUser(const char* output, int (*func)(int)) {
 }
 
 void prompt_for_filename(char* res) {
-    // 100 should be enough, right?
     char buf[100];
     FILE* fp;
 
@@ -272,12 +282,12 @@ int getNumProcess(FILE* filePtr) {
 }
 
 // stores values processes in process array
-PROCESS* assignProcessList(const char* filePath) {
+PROCESS* assignProcessList(const char* file_path) {
     int numSpace;
     int tmp;
     int counter = 0;
     int totalSpace = 0;
-    FILE* filePtr = fopen(filePath, "r");
+    FILE* filePtr = fopen(file_path, "r");
 
     number_of_procs = getNumProcess(filePtr);
 
@@ -285,7 +295,7 @@ PROCESS* assignProcessList(const char* filePath) {
     PROCESS* procList = malloc(number_of_procs * sizeof(PROCESS));
 
     if (!filePtr) {
-        printf("ERROR: Failed to open file %s", filePath);
+        printf("ERROR: Failed to open file %s", file_path);
         exit(1);
     }
 
