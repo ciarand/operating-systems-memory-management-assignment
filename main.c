@@ -34,7 +34,7 @@ proc_queue* queue;
 frame_list* framelist;
 
 void main_loop() {
-    int i;
+    int i, index;
     long current_time = 0;
     PROCESS* proc;
 
@@ -52,12 +52,16 @@ void main_loop() {
 
         // dequeue any procs that can be put into mem
         for (i = 0; i < queue->size; i += 1) {
-            proc = peek_queue_at_index(queue, iterate_queue_index(queue, i));
+            index = iterate_queue_index(queue, i);
+            proc = peek_queue_at_index(queue, index);
 
             if (proc_can_fit_into_memory(framelist, proc)) {
                 printf("MM moves Process %d to memory\n", (*proc).processNum);
+
                 fit_proc_into_memory(framelist, proc);
-                dequeue_proc(queue);
+                dequeue_proc_at_index(queue, i);
+
+                print_proc_queue(queue);
             }
         }
 

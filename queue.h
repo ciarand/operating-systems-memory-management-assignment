@@ -78,6 +78,21 @@ int iterate_queue_index(proc_queue* q, int counter) {
     return index;
 }
 
+void dequeue_proc_at_index(proc_queue* q, int index) {
+    int i, prev = 0;
+
+    for (i = 0; i < q->size; i += 1) {
+        if (i > index) {
+            q->elements[prev] = q->elements[i];
+        }
+
+        prev = i;
+    }
+
+    q->size--;
+    q->rear--;
+}
+
 void print_proc_queue(proc_queue* q) {
     int counter;
 
