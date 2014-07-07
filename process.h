@@ -17,5 +17,6 @@ typedef struct {
 
     int time_added_to_memory;
     int is_active;
+    int time_finished;
 } PROCESS;
 #endif

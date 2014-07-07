@@ -49,6 +49,19 @@ char* get_announcement_prefix(int current_time) {
     return result;
 }
 
+
+void print_turnaround_times()
+{
+    int i;
+    float total = 0;
+
+    for (i = 0; i < number_of_procs; i += 1) {
+        total += proc_list[i].time_finished - proc_list[i].time_added_to_memory;
+    }
+
+    printf("Average Turnaround Time: %2.2f\n", total / number_of_procs);
+}
+
 void main_loop() {
     int i, index, time_spent_in_memory;
     long current_time = 0;
@@ -83,6 +96,7 @@ void main_loop() {
                         proc->processNum);
 
                 proc->is_active = 0;
+                proc->time_finished = current_time;
 
                 free_memory_for_pid(framelist, proc->processNum);
 
@@ -120,6 +134,8 @@ void main_loop() {
             break;
         }
     }
+
+    print_turnaround_times();
 
     printf("all done\n");
 }
@@ -263,6 +279,7 @@ PROCESS* assignProcessList(const char* filePath) {
 
         procList[counter].is_active = 0;
         procList[counter].time_added_to_memory = -1;
+        procList[counter].time_finished = -1;
 
         counter++;
     }
