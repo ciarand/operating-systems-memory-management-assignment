@@ -14,5 +14,8 @@ typedef struct {
     int arrivalTime;
     int lifeTime;
     int memReq;
+
+    int time_left;
+    int is_active;
 } PROCESS;
 #endif
