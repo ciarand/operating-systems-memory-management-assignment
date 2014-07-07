@@ -105,3 +105,15 @@ void print_frame_list(frame_list* list) {
                 ((i) * list->page_size) -1);
     }
 }
+
+int frame_list_is_empty(frame_list* list) {
+    int i;
+
+    for (i = 0; i < list->number_of_frames; i += 1) {
+        if (list->frames[i].assigned) {
+            return 0;
+        }
+    }
+
+    return 1;
+}

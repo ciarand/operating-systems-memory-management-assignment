@@ -72,6 +72,11 @@ void main_loop() {
             printf("max time reached\n");
             break;
         }
+
+        if (queue->size == 0 && frame_list_is_empty(framelist)) {
+            printf("all jobs finished\n");
+            break;
+        }
     }
 
     printf("all done\n");
