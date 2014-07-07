@@ -13,8 +13,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+
 #include "process.h"
 #include "queue.h"
+#include "memory.h"
 
 // global constants
 const int TIME_MAX = 100000;
@@ -23,15 +25,18 @@ const int TIME_MAX = 100000;
 void getInput(int *mem, int * page);
 int getNumProcess(FILE* filePtr);
 PROCESS* assignProcessList(const char* filePath);
-void assignFrameList(FRAME* frameList, int pageSize, int numPage);
+void assignFrameList(frame_list* list, int page_size, int num_frames);
 
 // shared data
 int number_of_procs = 0;
 PROCESS* proc_list;
 proc_queue* queue;
+frame_list* framelist;
 
 void main_loop() {
-    int i, current_time = 0;
+    int i;
+    long current_time = 0;
+    PROCESS* proc;
 
     while (1) {
         // queue any procs that have arrived
@@ -45,8 +50,15 @@ void main_loop() {
             }
         }
 
+        // dequeue any procs that can be put into mem
         for (i = 0; i < queue->size; i += 1) {
+            proc = peek_queue_at_index(queue, iterate_queue_index(queue, i));
 
+            if (proc_can_fit_into_memory(framelist, proc)) {
+                printf("MM moves Process %d to memory\n", (*proc).processNum);
+                fit_proc_into_memory(framelist, proc);
+                dequeue_proc(queue);
+            }
         }
 
         current_time++;
@@ -58,26 +70,26 @@ void main_loop() {
     }
 
     printf("all done\n");
-
-    // get number of pages
-    //numPage = memSize / pageSize;
-    // create frames
-    //FRAME* framelist = malloc(numPage * sizeof(FRAME));
-    // assign frames
-    //assignFrameList(framelist, pageSize, numPage);
 }
 
 int main() {
-    int pageSize = 0;
-    int memSize  = 0;
-    //int numPage  = 0;
+    int page_size = 0;
+    int mem_size  = 0;
+    int num_frames  = 0;
 
     char* filePath = "./in1.txt";
     // assign values to processes from file
     proc_list = assignProcessList(filePath);
     queue = create_proc_queue(number_of_procs);
 
-    getInput(&memSize, &pageSize);
+    getInput(&mem_size, &page_size);
+
+    // get number of frames
+    num_frames = mem_size / page_size;
+    // create framelist
+    framelist = create_frame_list(num_frames, page_size);
+    // assign frames
+    // assignFrameList(framelist, page_size, num_frames);
 
     main_loop();
 
@@ -216,28 +228,28 @@ PROCESS* assignProcessList(const char* filePath) {
 }
 
 // assigns frames to memory and sets assigned to process to false
-void assignFrameList(FRAME* frameList, int pageSize, int numPage) {
+void assignFrameList(frame_list* list, int page_size, int num_frames) {
     int value = 0;
     char starting[40];
     char ending[20];
 
     // assign the frame list to empty set the memory
-    for (int i = 0; i < numPage; i++) {
-        frameList[i].assigned = false;
+    for (int i = 0; i < num_frames; i++) {
+        list->frames[i].assigned = 0;
 
         sprintf(starting, "%d", value);
         strcat(starting, "-");
         // setting value inclusive starting from zero
-        value += pageSize - 1;
+        value += page_size - 1;
 
         sprintf(ending, "%d", value);
         strcat(starting, ending);
-        strcpy(frameList[i].location, starting);
+        strcpy(list->frames[i].location, starting);
 
         value++;
 
         // for testing
-        printf("%s\n", frameList[i].location);
+        printf("%s\n", list->frames[i].location);
     }
 }
 
