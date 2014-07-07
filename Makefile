@@ -1,6 +1,6 @@
 CFLAGS=-Wall -Wextra -g --std=c99 --pedantic-errors -ggdb -gstrict-dwarf
 CC=gcc
-DEPS=process.h queue.h
+DEPS=process.h queue.h memory.h
 OBJ=main.o
 
 %.o: %.c $(DEPS)
@@ -11,7 +11,7 @@ main: $(OBJ)
 
 
 uncrustify:
-	uncrustify --replace --no-backup -c style.cfg *.c
+	uncrustify --replace --no-backup -c style.cfg *.c *.h
 
 clean:
 	rm -f main *.o core.*
