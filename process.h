@@ -16,11 +16,4 @@ typedef struct {
     int memReq;
 } PROCESS;
 
-typedef struct {
-    // 1 if assigned to process, otherwise 0
-    int assigned;
-    char location[40];
-    int procAssign;
-    int pageNumber;
-} FRAME;
 #endif
