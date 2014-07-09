@@ -171,7 +171,7 @@ void print_turnaround_times() {
     float total = 0;
 
     for (i = 0; i < number_of_procs; i += 1) {
-        total += proc_list[i].time_finished - proc_list[i].time_added_to_memory;
+        total += proc_list[i].time_finished - proc_list[i].arrival_time;
     }
 
     printf("Average Turnaround Time: %2.2f\n", total / number_of_procs);
