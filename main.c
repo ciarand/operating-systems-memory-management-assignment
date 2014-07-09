@@ -54,24 +54,26 @@ void main_loop() {
 }
 
 int main() {
-    int page_size = 0;
-    int mem_size = 0;
+    int page_size  = 0;
+    int mem_size   = 0;
 
     char* file_path = malloc(100 * sizeof(char));
 
-    int num_frames = 0;
+    /*******************************************************************
+     * FIRST PHASE
+     ******************************************************************/
 
+    // get the user input
     get_user_input(&mem_size, &page_size, file_path);
-    // assign values to processes from file
+
+    // read values from the input'd file into a shared proc list
     proc_list = assign_process_list(file_path);
+
+    // create a shared queue with a capacity = # of procs
     queue = create_proc_queue(number_of_procs);
 
-    // get number of frames
-    num_frames = mem_size / page_size;
-    // create framelist
-    framelist = create_frame_list(num_frames, page_size);
-    // assign frames
-    // assign_frame_list(framelist, page_size, num_frames);
+    // create a shared framelist
+    framelist = create_frame_list(mem_size / page_size, page_size);
 
     main_loop();
 
@@ -332,30 +334,3 @@ PROCESS* assign_process_list(const char* file_path) {
 
     return procList;
 }
-
-// assigns frames to memory and sets assigned to process to false
-void assign_frame_list(frame_list* list, int page_size, int num_frames) {
-    int value = 0;
-    char starting[40];
-    char ending[20];
-
-    // assign the frame list to empty set the memory
-    for (int i = 0; i < num_frames; i++) {
-        list->frames[i].assigned = 0;
-
-        sprintf(starting, "%d", value);
-        strcat(starting, "-");
-        // setting value inclusive starting from zero
-        value += page_size - 1;
-
-        sprintf(ending, "%d", value);
-        strcat(starting, ending);
-        strcpy(list->frames[i].location, starting);
-
-        value++;
-
-        // for testing
-        printf("%s\n", list->frames[i].location);
-    }
-}
-

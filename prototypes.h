@@ -1,3 +1,14 @@
+//
+//  queue.h
+//  Project3
+//
+//  Authors:
+//  - Stratton Aguilar
+//  - Ciaran Downey
+//
+//  Some rights reserved. See the included LICENSE file.
+//
+
 #include "process.h"
 #include "queue.h"
 #include "memory.h"
@@ -18,9 +29,6 @@ int main();
 // asks for numeric input from the user (using the output param) and validates
 // it with the provided function pointer
 int process_numeric_input_from_user(const char* output, int (*func)(int));
-
-// initializes the provided frame_list based on the other params
-void assign_frame_list(frame_list* list, int page_size, int num_frames);
 
 // assigns any available memory to waiting procs that'll fit in there
 void assign_available_memory_to_waiting_procs(int current_time);

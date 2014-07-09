@@ -2,8 +2,11 @@
 //  process.h
 //  Project3
 //
-//  Created by Stratton Aguilar on 7/3/14.
-//  Copyright (c) 2014 Stratton Aguilar. All rights reserved.
+//  Authors:
+//  - Stratton Aguilar
+//  - Ciaran Downey
+//
+//  Some rights reserved. See the included LICENSE file.
 //
 
 #ifndef Project3_process_h
